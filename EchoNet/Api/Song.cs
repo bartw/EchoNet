@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace EchoNet.Api
 {
-    class Song : Base
+    public class Song : Base
     {
+        public Song(string baseUri, string key, string userAgent)
+            : base(string.Format("{0}/song", baseUri), key, userAgent)
+        {
+        }
     }
 }

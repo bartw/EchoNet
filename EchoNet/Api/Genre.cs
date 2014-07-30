@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace EchoNet.Api
 {
-    class Genre : Base
+    public class Genre : Base
     {
+        public Genre(string baseUri, string key, string userAgent)
+            : base(string.Format("{0}/genre", baseUri), key, userAgent)
+        {
+        }
     }
 }

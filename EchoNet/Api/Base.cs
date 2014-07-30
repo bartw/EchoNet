@@ -9,12 +9,12 @@ using Windows.Web.Http;
 
 namespace EchoNet.Api
 {
-    internal class Base
+    public abstract class Base
     {
         private string _baseUri;
         private string _key;
         private string _userAgent;
-
+        
         public Base(string baseUri, string key, string userAgent)
         {
             _baseUri = baseUri;
@@ -22,9 +22,30 @@ namespace EchoNet.Api
             _userAgent = userAgent;
         }
 
+        protected KeyValuePair<string, string> GetFormatParameter(Format format)
+        {
+            string formatString;
+
+            switch (format)
+            {
+                case Format.Json:
+                    formatString = "json";
+                    break;
+                case Format.Xml:
+                    formatString = "xml";
+                    break;
+                default:
+                    formatString = "json";
+                    break;
+            }
+
+            return new KeyValuePair<string, string>("format", formatString);
+        }
+
         protected async Task<EchoResponse<T>> Execute<T>(string endpoint, Dictionary<string, string> parameters = null) where T : new()
         {
             var client = new HttpClient();
+
             
             var uri = string.Format("{0}{1}", _baseUri, endpoint);
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri(uri));

@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Api\Artist.cs" />
     <Compile Include="Api\Base.cs" />
+    <Compile Include="Api\Format.cs" />
     <Compile Include="Api\Genre.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="Models\EchoResponse.cs" />
