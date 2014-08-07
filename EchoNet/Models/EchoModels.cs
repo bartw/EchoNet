@@ -1,4 +1,8 @@
-public class License
+using System.Collections.Generic;
+
+namespace EchoNet.Models
+{
+    public class License
     {
         public string type { get; set; }
         public string attribution { get; set; }
@@ -206,3 +210,4 @@ public class License
         public string foreign_id { get; set; }
         public AudioSummary audio_summary { get; set; }
     }
+}
