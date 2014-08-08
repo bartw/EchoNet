@@ -13,7 +13,7 @@ namespace EchoNet.Api
         {
         }
 
-        public async Task<object> Biographies(string id, Format format = Format.Json, int results = 15, int start = 0)
+        public async Task<Models.EchoResponse<List<Models.Biography>>> Biographies(string id, Format format = Format.Json, int results = 15, int start = 0)
         {
             if (string.IsNullOrEmpty(id))
             {
@@ -28,11 +28,11 @@ namespace EchoNet.Api
             var parameters = new Dictionary<string, string>();
 
             parameters.Add("id", id);
-            parameters.Add("format", format == Format.Xml ? "xml" : "josn");
+            parameters.Add("format", format == Format.Xml ? "xml" : "json");
             parameters.Add("results", results.ToString());
             parameters.Add("start", start.ToString());
 
-            return await Execute<object>("/biographies", parameters);
+            return await Execute<List<Models.Biography>>("/biographies", "biographies", parameters);
         }
     }
 }

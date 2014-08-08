@@ -1,5 +1,6 @@
 ﻿using EchoNet.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,30 +43,34 @@ namespace EchoNet.Api
             return new KeyValuePair<string, string>("format", formatString);
         }
 
-        protected async Task<EchoResponse<T>> Execute<T>(string endpoint, Dictionary<string, string> parameters = null) where T : new()
+        protected async Task<EchoResponse<T>> Execute<T>(string endpoint, string dataIdentifier, Dictionary<string, string> parameters = null) where T : new()
         {
             var client = new HttpClient();
+            var uri = new StringBuilder();
+            bool firstParam = true;
 
-            
-            var uri = string.Format("{0}{1}", _baseUri, endpoint);
-            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(uri));
+            uri.AppendFormat("{0}{1}", _baseUri, endpoint);
 
             if (!string.IsNullOrWhiteSpace(_key))
             {
-                request.Headers.Add("api_key", _key);
-            }
-
-            if (!string.IsNullOrWhiteSpace(_userAgent))
-            {
-                request.Headers.Add("User-Agent", _userAgent);
+                uri.AppendFormat("{0}api_key={1}", firstParam ? "?" : "&", _key);
+                firstParam = false;
             }
 
             if (parameters != null && parameters.Count > 0)
             {
                 foreach (var parameter in parameters)
                 {
-                    request.Headers.Add(parameter.Key, parameter.Value);
+                    uri.AppendFormat("{0}{1}={2}", firstParam ? "?" : "&", parameter.Key, parameter.Value);
+                    firstParam = false;
                 }
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri(uri.ToString()));
+
+            if (!string.IsNullOrWhiteSpace(_userAgent))
+            {
+                request.Headers.Add("User-Agent", _userAgent);
             }
 
             var response = await client.SendRequestAsync(request);
@@ -77,7 +82,9 @@ namespace EchoNet.Api
 
             if (response.IsSuccessStatusCode)
             {
-                echoResponse.Data = JsonConvert.DeserializeObject<T>(content);
+                var jsonResponse = JObject.Parse(content);
+                var data = jsonResponse["response"][dataIdentifier];
+                echoResponse.Data = data.ToObject<T>(); //JsonConvert.DeserializeObject<T>(data);
             }
             else
             {
